@@ -97,6 +97,10 @@ fragment CartCommon on Cart {
         amount
         displayAmount
       }
+      discountTotal {
+        amount
+        displayAmount
+      }
       total {
         amount
         currency {
@@ -107,6 +111,25 @@ fragment CartCommon on Cart {
     }
   }
   totalItemQuantity
+  billing {
+    _id
+    amount
+    createdAt
+    currencyCode
+    data {
+      discountId
+      code
+    }
+    displayName
+    method
+    mode
+    name
+    paymentPluginName
+    processor
+    shopId
+    status
+    transactionId
+  }
 }
 
 # Fragment for queries that require pagination
@@ -153,6 +176,10 @@ fragment CartItemConnectionFragment on CartItemConnection {
         original
         medium
         thumbnail
+      }
+      shippingOverride {
+        state
+        surcharge
       }
       metafields {
         value

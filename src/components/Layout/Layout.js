@@ -12,10 +12,14 @@ const styles = (theme) => ({
     flex: "1 1 auto",
     maxWidth: theme.layout.mainContentMaxWidth,
     marginLeft: "auto",
-    marginRight: "auto"
+    marginRight: "auto",
+    backgroundColor: '#ffffff',
+    minHeight: 'calc(100vh - 56px)', // - 108px)'
   },
   article: {
-    padding: theme.spacing.unit * 3
+    padding: theme.spacing.unit * 3,
+    paddingTop: '56px', // '5rem',//0,
+    paddingBottom: theme.spacing.unit * 6
   }
 });
 

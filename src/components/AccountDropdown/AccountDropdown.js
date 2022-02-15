@@ -11,11 +11,14 @@ import ViewerInfo from "@reactioncommerce/components/ViewerInfo/v1";
 
 const styles = (theme) => ({
   accountDropdown: {
-    width: 320,
+    width: '100%',
     padding: theme.spacing.unit * 2
   },
   marginBottom: {
     marginBottom: theme.spacing.unit * 2
+  },
+  accountIcon: {
+    marginRight: theme.spacing.unit * -1
   }
 });
 
@@ -74,8 +77,8 @@ class AccountDropdown extends Component {
             {authStore.isAuthenticated ?
               <Fragment>
                 <div className={classes.marginBottom}>
-                  <Button color="primary" fullWidth href="/profile/address">
-                    Profile
+                  <Button color="primary" fullWidth href="/profile/orders">
+                    Orders
                   </Button>
                 </div>
                 <div className={classes.marginBottom}>

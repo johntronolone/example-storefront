@@ -16,15 +16,20 @@ export class NavigationDesktop extends Component {
     navItems: {}
   };
 
+  calcOffset(i) {
+    const offset = i * 140 + 146;
+    return offset.toString().concat('px');  
+  }
+
   renderNavItem(navItem, index) {
-    return <NavigationItemDesktop key={index} navItem={navItem} />;
+    return <NavigationItemDesktop key={index} navItem={navItem} leftOffset={this.calcOffset(index)} />;
   }
 
   render() {
     const { navItems } = this.props;
 
     if (navItems && navItems.items) {
-      return <nav>{navItems.items.map(this.renderNavItem)}</nav>;
+      return <nav>{navItems.items.map(this.renderNavItem.bind(this))}</nav>;
     }
 
     // If navItems.items aren't available, skip rendering of navigation

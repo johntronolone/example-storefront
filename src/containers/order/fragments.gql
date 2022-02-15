@@ -40,6 +40,10 @@ fragment OrderCommon on Order {
           small
           thumbnail
         }
+        attributes {
+          label
+          value
+        }
         isTaxable
         optionTitle
         parcel {

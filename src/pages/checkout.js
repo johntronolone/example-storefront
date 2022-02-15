@@ -25,14 +25,14 @@ import definedPaymentMethods from "../custom/paymentMethods";
 const styles = (theme) => ({
   checkoutActions: {
     width: "100%",
-    maxWidth: "600px",
+    //maxWidth: "600px",
     alignSelf: "flex-end",
     [theme.breakpoints.up("md")]: {
       paddingRight: "2rem"
     }
   },
   cartSummary: {
-    maxWidth: "400px",
+    //maxWidth: "400px",
     alignSelf: "flex-start",
     [theme.breakpoints.up("md")]: {
       paddingRight: "2rem"
@@ -218,7 +218,8 @@ class Checkout extends Component {
 
   // render page top bar
   renderCheckoutTopHat() {
-    return <CheckoutTopHat checkoutMessage="Free Shipping + Free Returns" />;
+    return ;
+    // <CheckoutTopHat checkoutMessage="Free Shipping + Free Returns" />;
   }
 
   // render page header
@@ -306,6 +307,8 @@ class Checkout extends Component {
       onChangeCartItemsQuantity
     } = this.props;
 
+   // console.log({cart});
+
     if (!cart || (cart && Array.isArray(cart.items) && cart.items.length === 0)) {
       return (
         <div className={classes.emptyCartContainer}>
@@ -330,8 +333,22 @@ class Checkout extends Component {
       <div className={classes.checkoutContentContainer}>
         <div className={classes.checkoutContent}>
           <Grid container spacing={24}>
-            <Grid item xs={12} md={7}>
+              
+            <Grid item xs={12} md={5}>
               <div className={classes.flexContainer}>
+                <div className={classes.cartSummary}>
+                  <CheckoutSummary
+                    cart={cart}
+                    hasMoreCartItems={hasMoreCartItems}
+                    onRemoveCartItems={onRemoveCartItems}
+                    onChangeCartItemsQuantity={onChangeCartItemsQuantity}
+                    onLoadMoreCartItems={loadMoreCartItems}
+                  />
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={12} md={7}>
+            <div className={classes.flexContainer}>
                 <div className={classes.checkoutActions}>
                   {orderEmailAddress ? (
                     <CheckoutEmailAddress emailAddress={orderEmailAddress} isAccountEmail={hasAccount} />
@@ -343,19 +360,6 @@ class Checkout extends Component {
                     clearAuthenticatedUsersCart={clearAuthenticatedUsersCart}
                     orderEmailAddress={orderEmailAddress}
                     paymentMethods={paymentMethods}
-                  />
-                </div>
-              </div>
-            </Grid>
-            <Grid item xs={12} md={5}>
-              <div className={classes.flexContainer}>
-                <div className={classes.cartSummary}>
-                  <CheckoutSummary
-                    cart={cart}
-                    hasMoreCartItems={hasMoreCartItems}
-                    onRemoveCartItems={onRemoveCartItems}
-                    onChangeCartItemsQuantity={onChangeCartItemsQuantity}
-                    onLoadMoreCartItems={loadMoreCartItems}
                   />
                 </div>
               </div>

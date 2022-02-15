@@ -4,6 +4,10 @@ import Select from "components/Select";
 
 const SORT_BY = [
   {
+    name: "Featured",
+    value: "createdAt-asc"
+  },
+  {
     name: "Newest",
     value: "updatedAt-desc"
   },

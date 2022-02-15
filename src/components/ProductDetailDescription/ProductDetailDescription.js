@@ -18,9 +18,15 @@ class ProductDetailDescription extends Component {
     const { children, ...props } = this.props;
 
     if (!children) return null;
+    
+    // fix to un-escape new line characters in database
+    var children_split = children.split('\\n');
+    var children_join = children_split.join('\n');
 
     return (
-      <Typography component="div" {...props}>{children}</Typography>
+      <div style={{ padding: 20 }}>
+        <Typography style={{whiteSpace: 'pre-line'}} component="div" {...props}>{children_join}</Typography>
+      </div>
     );
   }
 }

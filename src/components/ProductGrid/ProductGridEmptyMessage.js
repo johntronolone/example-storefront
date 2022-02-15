@@ -13,10 +13,12 @@ const styles = (theme) => ({
     marginTop: "4rem"
   },
   actionMessage: {
-    color: theme.palette.reaction.coolGrey400
+    //color: theme.palette.reaction.coolGrey400
+    color: '#e6e6e6'
   },
   notFoundMessage: {
-    color: theme.palette.reaction.black65
+    //color: theme.palette.reaction.black65
+    color: '#e6e6e6'
   }
 });
 
@@ -33,7 +35,7 @@ export default class ProductGridEmptyMessage extends Component {
 
   static defaultProps = {
     actionMessage: "Clear filters",
-    notFoundMessage: "Sorry! We couldn't find what you're looking for."
+    notFoundMessage: "Items not found. Please refresh or try again."
   }
 
   render() {

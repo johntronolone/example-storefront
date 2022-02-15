@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import CartSummary from "@reactioncommerce/components/CartSummary/v1";
+//import CartSummary from "components/CheckoutSummary/CartSummary";
 
 class OrderCardSummary extends Component {
   static propTypes = {

@@ -2,33 +2,25 @@
 import React, { Fragment, Component } from "react";
 import PropTypes from "prop-types";
 import { isEqual } from "lodash";
-import { observer } from "mobx-react";
 import styled from "styled-components";
 import Actions from "@reactioncommerce/components/CheckoutActions/v1";
 import ShippingAddressCheckoutAction from "@reactioncommerce/components/ShippingAddressCheckoutAction/v1";
 import FulfillmentOptionsCheckoutAction from "@reactioncommerce/components/FulfillmentOptionsCheckoutAction/v1";
 import PaymentsCheckoutAction from "@reactioncommerce/components/PaymentsCheckoutAction/v1";
-import FinalReviewCheckoutAction from "@reactioncommerce/components/FinalReviewCheckoutAction/v1";
+//import FinalReviewCheckoutAction from "@reactioncommerce/components/FinalReviewCheckoutAction/v1";
+import FinalReviewCheckoutAction from "./FinalReviewCheckoutActionMod";
 import { addTypographyStyles } from "@reactioncommerce/components/utils";
 import withAddressValidation from "containers/address/withAddressValidation";
 import Dialog from "@material-ui/core/Dialog";
 import PageLoading from "components/PageLoading";
+//import Router from "translations/i18nRouter";
 import { Router } from "routes";
-import track from "lib/tracking/track";
-import TRACKING from "lib/tracking/constants";
-import trackCheckout from "lib/tracking/trackCheckout";
-import trackOrder from "lib/tracking/trackOrder";
-import trackCheckoutStep from "lib/tracking/trackCheckoutStep";
 import calculateRemainderDue from "lib/utils/calculateRemainderDue";
-import { placeOrder } from "../../containers/order/mutations.gql";
-
-const {
-  CHECKOUT_STARTED,
-  CHECKOUT_STEP_COMPLETED,
-  CHECKOUT_STEP_VIEWED,
-  ORDER_COMPLETED,
-  PAYMENT_INFO_ENTERED
-} = TRACKING;
+//import { placeOrderMutation } from "../../hooks/orders/placeOrder.gql";
+import { placeOrderMutation } from "containers/order/mutations.gql";
+import PaymentsCheckoutActionMod from "./PaymentsCheckoutActionMod";
+import withDiscount from "containers/discounts/withDiscounts";
+import formatMoney from "components/CheckoutActions/utils/formatMoney";
 
 const MessageDiv = styled.div`
   ${addTypographyStyles("NoPaymentMethodsMessage", "bodyText")}
@@ -38,13 +30,16 @@ const NoPaymentMethodsMessage = () => <MessageDiv>No payment methods available</
 
 NoPaymentMethodsMessage.renderComplete = () => "";
 
-@withAddressValidation
-@track()
-@observer
-export default class CheckoutActions extends Component {
+@withDiscount
+
+class CheckoutActions extends Component {
   static propTypes = {
     addressValidation: PropTypes.func.isRequired,
     addressValidationResults: PropTypes.object,
+    //apolloClient: PropTypes.shape({
+    client: PropTypes.shape({
+      mutate: PropTypes.func.isRequired
+    }),
     cart: PropTypes.shape({
       account: PropTypes.object,
       checkout: PropTypes.object,
@@ -57,11 +52,9 @@ export default class CheckoutActions extends Component {
       onSetShippingAddress: PropTypes.func.isRequired
     }),
     clearAuthenticatedUsersCart: PropTypes.func.isRequired,
-    client: PropTypes.shape({
-      mutate: PropTypes.func.isRequired
-    }),
     orderEmailAddress: PropTypes.string.isRequired,
-    paymentMethods: PropTypes.array
+    paymentMethods: PropTypes.array,
+    onRemoveDiscountCodeFromCart: PropTypes.func.isRequired
   };
 
   state = {
@@ -75,24 +68,6 @@ export default class CheckoutActions extends Component {
     isPlacingOrder: false
   };
 
-  componentDidMount() {
-    this._isMounted = true;
-    const { cart } = this.props;
-
-    // Track start of checkout process
-    this.trackCheckoutStarted({ cart, action: CHECKOUT_STARTED });
-
-    const { checkout: { fulfillmentGroups } } = cart;
-    const [fulfillmentGroup] = fulfillmentGroups;
-
-    // Track the first step, "Enter a shipping address" when the page renders,
-    // as it will be expanded by default, only record this event when the
-    // shipping address has not yet been set.
-    if (!fulfillmentGroup.shippingAddress) {
-      this.trackAction(this.buildData({ action: CHECKOUT_STEP_VIEWED, step: 1 }));
-    }
-  }
-
   componentDidUpdate({ addressValidationResults: prevAddressValidationResults }) {
     const { addressValidationResults } = this.props;
     if (
@@ -104,18 +79,13 @@ export default class CheckoutActions extends Component {
     }
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  @trackCheckoutStep()
-  trackAction() {}
-
-  @trackCheckout()
-  trackCheckoutStarted() {}
-
-  @trackOrder()
-  trackOrder() {}
 
   buildData = ({ step, action }) => ({
     action,
@@ -136,25 +106,60 @@ export default class CheckoutActions extends Component {
   }
 
   setShippingAddress = async (address) => {
+    //console.log('setShippingAddress (1)');
     const { checkoutMutations: { onSetShippingAddress } } = this.props;
     delete address.isValid;
-    const { data, error } = await onSetShippingAddress(address);
-
-    if (data && !error) {
-      // track successfully setting a shipping address
-      this.trackAction(this.buildData({ action: CHECKOUT_STEP_COMPLETED, step: 1 }));
-
-      // The next step will automatically be expanded, so lets track that
-      this.trackAction(this.buildData({ action: CHECKOUT_STEP_VIEWED, step: 2 }));
-
-      if (this._isMounted) {
+    
+    //const { onRemoveDiscountCodeFromCart } = this.props;
+    //const { cart } = this.props;
+    /*if (cart.billing && cart.billing.length) {
+      //onRemoveDiscountCodeFromCart(cart.billing[0]._id);
+      //console.log('setShippingAddress attempt to remove discount code...');
+      //const { data, error } = await onSetShippingAddress(address).then(() => onRemoveDiscountCodeFromCart(cart.billing[0]._id));
+      const { data, error } = await onRemoveDiscountCodeFromCart(cart.billing[0]._id).then(() => onSetShippingAddress(address));
+      //console.log({data});
+      if (data && !error && this._isMounted) {
         this.setState({
           actionAlerts: {
             1: {}
           }
         });
       }
+    } else {
+
+      const { data, error } = await onSetShippingAddress(address);
+      if (data && !error && this._isMounted) {
+        this.setState({
+          actionAlerts: {
+            1: {}
+          }
+        });
+      }
+    }*/
+
+    const { data, error } = await onSetShippingAddress(address);
+
+    if (data && !error && this._isMounted) {
+      this.setState({
+        actionAlerts: {
+          1: {}
+        }
+      });
+      return data.setShippingAddressOnCart.cart;
     }
+  };
+
+  removeDiscount = async (cartWithDiscount) => {
+    //console.log('removeDiscount (2)');
+    //console.log({cartWithDiscount});
+    const { onRemoveDiscountCodeFromCart } = this.props;
+    if (cartWithDiscount.billing && cartWithDiscount.billing.length) {
+      await onRemoveDiscountCodeFromCart(cartWithDiscount.billing[0]._id);
+    }
+  }
+
+  setShippingAddressWrapper = async (address) => {
+    await this.setShippingAddress(address).then(xCart => this.removeDiscount(xCart));
   };
 
   handleValidationErrors() {
@@ -176,15 +181,9 @@ export default class CheckoutActions extends Component {
       fulfillmentGroupId: fulfillmentGroups[0]._id,
       fulfillmentMethodId: shippingMethod.selectedFulfillmentOption.fulfillmentMethod._id
     };
-
+    
     const { data, error } = await onSetFulfillmentOption(fulfillmentOption);
-    if (data && !error) {
-      // track successfully setting a shipping method
-      this.trackAction(this.buildData({ action: CHECKOUT_STEP_COMPLETED, step: 2 }));
-
-      // The next step will automatically be expanded, so lets track that
-      this.trackAction(this.buildData({ action: CHECKOUT_STEP_VIEWED, step: 3 }));
-    }
+    //await onSetFulfillmentOption(fulfillmentOption).then(() => this.handlePaymentsReset());
   };
 
   handlePaymentSubmit = (paymentInput) => {
@@ -196,12 +195,6 @@ export default class CheckoutActions extends Component {
         3: {}
       }
     });
-
-    // Track successfully setting a payment method
-    this.trackAction(this.buildData({ action: PAYMENT_INFO_ENTERED, step: 3 }));
-
-    // The next step will automatically be expanded, so lets track that
-    this.trackAction(this.buildData({ action: CHECKOUT_STEP_VIEWED, step: 4 }));
   };
 
   handlePaymentsReset = () => {
@@ -258,7 +251,7 @@ export default class CheckoutActions extends Component {
 
     try {
       const { data } = await apolloClient.mutate({
-        mutation: placeOrder,
+        mutation: placeOrderMutation,
         variables: {
           input: {
             order,
@@ -278,11 +271,8 @@ export default class CheckoutActions extends Component {
 
       const { placeOrder: { orders, token } } = data;
 
-      this.trackAction(this.buildData({ action: CHECKOUT_STEP_COMPLETED, step: 4 }));
-
-      this.trackOrder({ action: ORDER_COMPLETED, orders });
-
       // Send user to order confirmation page
+      //Router.push(`/checkout/order?orderId=${orders[0].referenceId}${token ? `&token=${token}` : ""}`);   
       Router.pushRoute("checkoutComplete", { orderId: orders[0].referenceId, token });
     } catch (error) {
       if (this._isMounted) {
@@ -320,9 +310,12 @@ export default class CheckoutActions extends Component {
       paymentMethods
     } = this.props;
 
+    const isSaving = false;
+
     const { checkout: { fulfillmentGroups, summary }, items } = cart;
     const { actionAlerts, hasPaymentError } = this.state;
-    const [fulfillmentGroup] = fulfillmentGroups;
+    //const [fulfillmentGroup] = fulfillmentGroups;
+    let [fulfillmentGroup] = fulfillmentGroups;
 
     // Order summary
     const { fulfillmentTotal, itemTotal, surchargeTotal, taxTotal, total } = summary;
@@ -334,6 +327,32 @@ export default class CheckoutActions extends Component {
       displayTax: taxTotal && taxTotal.displayAmount,
       items
     };
+    
+    let shippingSurcharge = 0;
+    if (items && fulfillmentGroup && fulfillmentGroup.shippingAddress && fulfillmentGroup.shippingAddress.region) {
+      items.map((item) => {
+        if (item.shippingOverride) {
+          item.shippingOverride.map((override) => {
+            if (override.state == fulfillmentGroup.shippingAddress.region) {
+              shippingSurcharge += override.surcharge * item.quantity;
+            }
+          });
+        }
+      });
+    }
+
+    if (shippingSurcharge && fulfillmentGroup && fulfillmentGroup.availableFulfillmentOptions && fulfillmentGroup.availableFulfillmentOptions[0] && fulfillmentGroup.availableFulfillmentOptions[0].price && fulfillmentGroup.availableFulfillmentOptions[0].price.displayAmount) {
+      /*const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      });*/
+      fulfillmentGroup.availableFulfillmentOptions[0].price.displayAmount = formatMoney(shippingSurcharge);
+      //console.log('set shipping surcharge');
+    }
+
+    /*if (fulfillmentTotal && fulfillmentTotal.displayAmount) {
+      fulfillmentGroup.availableFulfillmentOptions[0].price.displayAmount = fulfillmentTotal.displayAmount;
+    } */ 
 
     const addresses = fulfillmentGroups.reduce((list, group) => {
       if (group.shippingAddress) list.push(group.shippingAddress);
@@ -343,7 +362,7 @@ export default class CheckoutActions extends Component {
     const payments = cartStore.checkoutPayments.slice();
     const remainingAmountDue = calculateRemainderDue(payments, total.amount);
 
-    let PaymentComponent = PaymentsCheckoutAction;
+    let PaymentComponent = PaymentsCheckoutActionMod;
     if (!Array.isArray(paymentMethods) || paymentMethods.length === 0) {
       PaymentComponent = NoPaymentMethodsMessage;
     }
@@ -391,7 +410,8 @@ export default class CheckoutActions extends Component {
           onReset: this.handlePaymentsReset,
           payments,
           paymentMethods,
-          remainingAmountDue
+          remainingAmountDue,
+          isSaving
         }
       },
       {
@@ -418,3 +438,6 @@ export default class CheckoutActions extends Component {
     );
   }
 }
+
+export default withAddressValidation(CheckoutActions);
+

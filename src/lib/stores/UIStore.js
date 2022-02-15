@@ -60,7 +60,7 @@ class UIStore {
    *
    * @type Number
    */
-  @observable pageSize = PAGE_SIZES._20;
+  @observable pageSize = PAGE_SIZES._15;
 
   /**
    * App config data
@@ -86,7 +86,7 @@ class UIStore {
    *
    * @type string
    */
-  @observable sortBy = "updatedAt-desc";
+  @observable sortBy = "createdAt-asc";
 
   /**
    * The sort by currency code
@@ -176,7 +176,7 @@ class UIStore {
 
   @action setPageSize = (size) => {
     // Validate page size
-    this.pageSize = inPageSizes(size) ? size : PAGE_SIZES._20;
+    this.pageSize = inPageSizes(size) ? size : PAGE_SIZES._15;
   }
 
   @action setSortBy = (sortBy) => {

@@ -51,7 +51,7 @@ export default class App extends NextApp {
   constructor(props) {
     super(props);
     this.pageContext = getPageContext();
-    this.state = { stripe: null };
+    this.state = { stripe: null, isMounted: false };
   }
 
   pageContext = null;
@@ -59,6 +59,8 @@ export default class App extends NextApp {
   componentDidMount() {
     // Fetch and update auth token in auth store
     rootMobXStores.cartStore.setAnonymousCartCredentialsFromLocalStorage();
+    
+    this.setState({ isMounted: true });
 
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -67,10 +69,32 @@ export default class App extends NextApp {
     }
 
     const { stripePublicApiKey } = publicRuntimeConfig;
-    if (stripePublicApiKey && window.Stripe) {
-      // eslint-disable-next-line react/no-did-mount-set-state
-      this.setState({ stripe: window.Stripe(stripePublicApiKey) });
+    if (stripePublicApiKey) {
+      if (window.Stripe) {
+        // eslint-disable-next-line react/no-did-mount-set-state
+        this.setState({ stripe: window.Stripe(stripePublicApiKey) });
+      } else {
+        document.querySelector("#stripe-js").addEventListener("load", () => { 
+          // Create Stripe instance once Stripe.js loads
+          // eslint-disable-next-line react/no-did-mount-set-state
+          if (this.state.isMounted) {
+            this.setState({ stripe: window.Stripe(stripePublicApiKey) });
+          }
+          //setTimeout(
+            //() => {
+              //if (this.state.isMounted) {
+                //this.setState({ stripe: window.Stripe(stripePublicApiKey) });
+              //}
+            //},
+            //5000
+          //);
+        });
+      }
     }
+  }
+
+  componentDidCatch(error, info) {
+    this.setState({ isMounted: false });
   }
 
   render() {

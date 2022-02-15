@@ -6,13 +6,14 @@ import { createMuiTheme } from "@material-ui/core/styles";
 
 const theme = createMuiTheme({
   layout: {
-    mainContentMaxWidth: "1440px",
+    mainContentMaxWidth: "1200px",
     mainLoginMaxWidth: "1024px"
   },
   palette: {
     primary: {
       light: "#26B0F9",
-      main: "#1999DD",
+      //main: "#1999DD",
+      main: "#4e71ba",
       dark: "#172F3C",
       contrastText: "#FFFFFF"
     },
@@ -23,7 +24,8 @@ const theme = createMuiTheme({
       contrastText: "#000000"
     },
     background: {
-      default: "#ffffff"
+      //default: "#ffffff"
+      default: '#e6e6e6'
     },
     error: {
       light: "#E54F5D",
@@ -42,7 +44,8 @@ const theme = createMuiTheme({
       default: "1px solid #e6e6e6"
     },
     reaction: {
-      activeElementBorderColor: "#94E8D1",
+      //activeElementBorderColor: "#94E8D1",
+      activeElementBorderColor: "#859dcf",
       activeElementBackground: "#E6E6E6",
       badges: {
         bestseller: "#8CE0C9",
@@ -74,13 +77,20 @@ const theme = createMuiTheme({
       black02: "#fafafa",
       white: "#ffffff",
       // medium colors
-      reactionBlue: "#1999dd",
-      reactionBlue100: "#ecf8fe",
-      reactionBlue200: "#d6e5ed",
-      reactionBlue300: "#26b0f9",
-      reactionBlue400: "#067ebe",
-      reactionBlue500: "#285268",
-      reactionBlue600: "#172f3c",
+      //reactionBlue: "#1999dd",
+      reactionBlue: "#4e71ba",
+      //reactionBlue100: "#ecf8fe",
+      //reactionBlue200: "#d6e5ed",
+      //reactionBlue300: "#26b0f9",
+      //reactionBlue400: "#067ebe",
+      //reactionBlue500: "#285268",
+      //reactionBlue600: "#172f3c",
+      reactionBlue100: "#859dcf",
+      reactionBlue200: "#738ec8",
+      reactionBlue300: "#6080c1",
+      reactionBlue400: "#4365ac",
+      reactionBlue500: "#3c5a99",
+      reactionBlue600: "#354f87",
       coolGrey: "#5e7480",
       coolGrey100: "#e3ebf0",
       coolGrey200: "#d5d5d5",
@@ -103,6 +113,13 @@ const theme = createMuiTheme({
       darkBlue400: "#103a4d",
       darkBlue500: "#333f45",
       darkBlue600: "#242c30",
+      //darkBlue: "4e71ba",
+      //darkBlue100: "#859dcf",
+      //darkBlue200: "#738ec8",
+      //darkBlue300: "#6080c1",
+      //darkBlue400: "#4365ac",
+      //darkBlue500: "#3c5a99",
+      //darkBlue600: "#354f87",
       // support colors
       yellow: "#3fc95f",
       yellow100: "#fcf3dc",
@@ -119,7 +136,8 @@ const theme = createMuiTheme({
       red500: "#5e3033",
       red600: "#3c1f21",
       pageLoading: {
-        innerColor: "#1999dd",
+        //innerColor: "#1999dd",
+        innerColor: "4e71ba",
         outerColor: "rgba(9.80392156862745%,59.99999999999995%,86.66666666666667%,0.122)"
       },
       teal: "#8ce0c9",
@@ -129,6 +147,13 @@ const theme = createMuiTheme({
       teal400: "#55e4be",
       teal500: "#447467",
       teal600: "#34584f"
+      //teal: "4e71ba",
+      //teal100: "#859dcf",
+      //teal200: "#738ec8",
+      //teal300: "#6080c1",
+      //teal400: "#4365ac",
+      //teal500: "#3c5a99",
+      //teal600: "#354f87"
     }
   },
   borderRadii: {

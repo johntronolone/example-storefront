@@ -11,13 +11,14 @@ import Plus from "mdi-material-ui/Plus";
 import { inject, observer } from "mobx-react";
 import CartPopover from "components/CartPopover";
 import Divider from "components/Divider";
+import variantById from "lib/utils/variantById";
 
 const styles = (theme) => ({
   addToCartButton: {
     "padding": theme.spacing.unit,
     "backgroundColor": theme.palette.primary.main,
     "borderRadius": theme.palette.reaction.buttonBorderRadius,
-    "minWidth": "66%",
+    "minWidth": "100%",
     "&:hover": {
       borderColor: theme.palette.reaction.activeElementBorderColor
     },
@@ -84,9 +85,10 @@ export default class ProductDetailAddToCart extends Component {
     selectedOptionId: PropTypes.string,
     selectedVariantId: PropTypes.string,
     uiStore: PropTypes.shape({
-      openCartWithTimeout: PropTypes.func
+      openCart: PropTypes.func
     }).isRequired,
-    variants: PropTypes.array
+    variants: PropTypes.array,
+    product: PropTypes.object
   };
 
   static defaultProps = {
@@ -99,15 +101,15 @@ export default class ProductDetailAddToCart extends Component {
   };
 
   handleOnClick = async () => {
-    const { onClick, uiStore } = this.props;
+    const { onClick, uiStore, product } = this.props;
 
     // Pass chosen quantity to onClick callback
     await onClick(this.state.addToCartQuantity);
 
     // Scroll to the top
-    if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
-      window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
-    }
+    //if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
+    //  window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+    //}
 
     // Reset cart quantity to 1 after items are added to cart
     this.setState({
@@ -115,8 +117,21 @@ export default class ProductDetailAddToCart extends Component {
       addToCartQuantity: 1
     });
 
+    if (!uiStore.pdpSelectedVariantId) {
+      this.setState({ addToCartError: "Error: No variant selected" });
+    }
+    
+    /*let selectedVariant = null;
+    
+    if (product) {
+      selectedVariant = variantById(product.variants, pdpSelectedVariantId);
+    }
+    
+    if (!selectedVariant) {
+      this.setState({ addToCartError: "Error: No variant selected" });
+    }*/
     // Open cart popper on addToCart
-    uiStore.openCartWithTimeout();
+    //uiStore.openCart();
   }
 
   handleQuantityInputChange = (event) => {

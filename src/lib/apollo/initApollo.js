@@ -59,7 +59,7 @@ const create = (initialState, options) => {
         // If a 401 Unauthorized error occurred, redirect to /signin.
         // This will re-authenticate the user without showing a login page and a new token is issued.
         logger.info("Attempting silent re-auth");
-        if (process && process.browser) {
+        /*if (process && process.browser) {
           Router.pushRoute(SIGN_IN_PATH);
         } else {
           // In server, if a 401 Unauthorized error occurred, redirect to /signin.
@@ -70,8 +70,12 @@ const create = (initialState, options) => {
             options.res.writeHead(STATUS_FOUND, { Location: SIGN_IN_PATH });
             options.res.end();
           }
+        }*/
+        if (options.req) options.req.logout();
+        if (options.res) {
+          options.res.writeHead(STATUS_FOUND, { Location: "/" });
+          options.res.end();
         }
-
         return;
       }
       if (errorCode !== STATUS_BAD_REQUEST) {

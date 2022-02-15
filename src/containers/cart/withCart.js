@@ -327,10 +327,45 @@ export default function withCart(Component) {
             fulfillmentGroupId,
             fulfillmentMethodId
           }
+        },
+        update: (cache, { data: mutationData }) => {
+          //console.log({mutationData}); 
+          const { cart: cartPayload } = mutationData.selectFulfillmentOptionForGroup;
+
+          if (cartPayload) {
+            // Update Apollo cache
+            cache.writeQuery({
+              query: cartPayload.account ? accountCartByAccountIdQuery : anonymousCartByCartIdQuery,
+              data: { cart: cartPayload }
+            });
+          }
+        }
+      });
+    }
+    
+    /**
+     * @name handleSetFulfillmentOptionAsync
+     * @summary Sets a fulfillment method for items in a cart - needed for recalculating shipping price on address change for shipmentOverride surcharges
+     * @param {Object} fulfillmentOption - an object with the following props: fulfillmentGroupId, fulfillmentMethodId
+     * @param {Function} mutation An Apollo mutation function
+     * @return {undefined} No return
+     */
+    handleSetFulfillmentOptionAsync = async ({ fulfillmentGroupId, fulfillmentMethodId }) => {
+      const { client: apolloClient } = this.props;
+
+      await apolloClient.mutate({
+        mutation: setFulfillmentOptionCartMutation,
+        variables: {
+          input: {
+            ...this.cartIdAndCartToken,
+            fulfillmentGroupId,
+            fulfillmentMethodId
+          }
         }
       });
     }
 
+    
     /**
      * @name handleSetShippingAddress
      * @summary Sets the shipping address for the cart
@@ -353,7 +388,22 @@ export default function withCart(Component) {
 
       // Update fulfillment options for current cart
       const { data: { setShippingAddressOnCart: { cart } } } = response;
-      this.handleUpdateFulfillmentOptionsForGroup(cart.checkout.fulfillmentGroups[0]._id);
+      //this.handleUpdateFulfillmentOptionsForGroup(cart.checkout.fulfillmentGroups[0]._id);
+
+      //TODO: below works i think but i also think there's a better way to do it. To get below working again remove duplicate handleUpdateFulfillment...(...Groups[0]._id) on previous line
+
+      //TODO: i think the issue is that this and the next await are running in parallel, when in fact the second await needs to wait for the first to resolve
+      //const response2 = await this.handleUpdateFulfillmentOptionsForGroup(cart.checkout.fulfillmentGroups[0]._id);
+     
+      if (cart.checkout.fulfillmentGroups[0] && cart.checkout.fulfillmentGroups[0].selectedFulfillmentOption && cart.checkout.fulfillmentGroups[0].selectedFulfillmentOption.fulfillmentMethod._id) {
+        //console.log('has shipping method');
+        this.handleUpdateFulfillmentOptionsForGroup(cart.checkout.fulfillmentGroups[0]._id).then(() => {
+          this.handleSetFulfillmentOptionAsync({ fulfillmentGroupId: cart.checkout.fulfillmentGroups[0]._id, fulfillmentMethodId: cart.checkout.fulfillmentGroups[0].selectedFulfillmentOption.fulfillmentMethod._id});
+        });
+      } else {
+        //console.log('does not have shipping method');
+        this.handleUpdateFulfillmentOptionsForGroup(cart.checkout.fulfillmentGroups[0]._id)
+      }
 
       return response;
     }

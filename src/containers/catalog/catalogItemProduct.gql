@@ -170,6 +170,10 @@ query catalogItemProductQuery($slugOrId: String!) {
           variantId
         }
       }
+      selectors {
+        selectorName
+        selectorOptionsAsCSV
+      }
     }
   }
 }

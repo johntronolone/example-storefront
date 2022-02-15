@@ -2,7 +2,8 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
-import CatalogGrid from "@reactioncommerce/components/CatalogGrid/v1";
+//import CatalogGrid from "@reactioncommerce/components/CatalogGrid/v1";
+import CatalogGridMod from 'components/CatalogGridMod';
 import track from "lib/tracking/track";
 import trackProductClicked from "lib/tracking/trackProductClicked";
 import PageLoading from "components/PageLoading";
@@ -70,12 +71,13 @@ export default class ProductGrid extends Component {
     return (
       <Fragment>
         <Grid container spacing={24}>
-          <CatalogGrid
+          <CatalogGridMod
             initialSize={initialSize}
             onItemClick={this.onItemClick}
             products={products}
             placeholderImageURL="/static/images/placeholder.gif"
             {...this.props}
+            style={{zIndex: 0}}
           />
         </Grid>
         {pageInfo && <PageStepper pageInfo={pageInfo} />}

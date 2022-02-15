@@ -166,6 +166,9 @@ class CartPage extends Component {
     const { cart, classes, shop } = this.props;
     // when a user has no item in cart in a new session, this.props.cart is null
     // when the app is still loading, this.props.cart is undefined
+
+    //console.log({cart});
+
     if (typeof cart === "undefined") return <PageLoading delay={0} />;
 
     return (
@@ -181,7 +184,7 @@ class CartPage extends Component {
           <Grid container spacing={24}>
             {this.renderCartItems()}
             {this.renderCartSummary()}
-            <Grid className={classes.customerSupportCopy} item>
+            {/*<Grid className={classes.customerSupportCopy} item>
               <Typography paragraph variant="caption">
                 Have questions? call <span className={classes.phoneNumber}>1.800.555.5555</span>
               </Typography>
@@ -191,7 +194,7 @@ class CartPage extends Component {
               <Typography paragraph variant="caption">
                 <Link href="#">Return policy</Link>
               </Typography>
-            </Grid>
+            </Grid>*/}
           </Grid>
         </section>
       </Fragment>

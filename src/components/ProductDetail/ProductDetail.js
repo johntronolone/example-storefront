@@ -19,6 +19,9 @@ import variantById from "lib/utils/variantById";
 import trackProduct from "lib/tracking/trackProduct";
 import TRACKING from "lib/tracking/constants";
 import trackCartItems from "lib/tracking/trackCartItems";
+import ProductDetailBannerDesc from "components/ProductDetailBannerDesc";
+import VariantSelector from "components/VariantSelector";
+import Divider from "components/Divider";
 
 const { CART_VIEWED, PRODUCT_ADDED, PRODUCT_VIEWED } = TRACKING;
 
@@ -28,7 +31,7 @@ const styles = (theme) => ({
   },
   breadcrumbGrid: {
     marginBottom: theme.spacing.unit * 2,
-    marginTop: theme.spacing.unit * 2
+    marginTop: theme.spacing.unit * 4
   },
   info: {
     marginBottom: theme.spacing.unit
@@ -67,14 +70,27 @@ class ProductDetail extends Component {
   };
 
   componentDidMount() {
-    const { product } = this.props;
+    const { product, routingStore } = this.props;
+  
+    //console.log(routingStore);
 
     // Select first variant by default
-    this.selectVariant(product.variants[0]);
+    if (!product.selectors) {
+      if (routingStore.query.variantId){
+        //console.log(product.variants);
+        this.selectVariant(product.variants.find(variant => variant._id == routingStore.query.variantId));
+      } else {
+        this.selectVariant(product.variants[0]);
+      } 
+    } else {
+      if (routingStore.query.variantId){
+        //fill in dropdowns (this is on opening a link with variant in URL (i.e. link sharing w variant))
+      }
+    }
   }
 
   selectVariant(variant, optionId) {
-    const { product, uiStore } = this.props;
+    const { product, uiStore, routingStore } = this.props;
 
     // Select the variant, and if it has options, the first option
     const variantId = variant._id;
@@ -86,11 +102,15 @@ class ProductDetail extends Component {
     this.trackAction({ variant, optionId, action: PRODUCT_VIEWED });
 
     uiStore.setPDPSelectedVariantId(variantId, selectOptionId);
-
+    /*
     Router.pushRoute("product", {
       slugOrId: product.slug,
       variantId: selectOptionId || variantId
-    }, { replace: true });
+    }, { replace: true });*/
+    //console.log(routingStore.query.variantId);
+    if (routingStore.query.variantId != variantId) {
+      Router.replaceRoute('/product/' + product.slug + '/' + variantId);
+    }
   }
 
   @trackProduct()
@@ -124,61 +144,75 @@ class ProductDetail extends Component {
       addItemsToCart,
       currencyCode,
       product,
-      uiStore: { openCartWithTimeout, pdpSelectedOptionId, pdpSelectedVariantId },
+      uiStore: { openCart, openCartWithTimeout, pdpSelectedOptionId, pdpSelectedVariantId },
       width
     } = this.props;
 
     // Get selected variant or variant option
-    const selectedVariant = variantById(product.variants, pdpSelectedVariantId);
-    const selectedOption = variantById(selectedVariant.options, pdpSelectedOptionId);
-    const selectedVariantOrOption = selectedOption || selectedVariant;
+    if (pdpSelectedVariantId) {   
+    
+      const selectedVariant = variantById(product.variants, pdpSelectedVariantId);
+      if (selectedVariant) {
+        const selectedOption = variantById(selectedVariant.options, pdpSelectedOptionId);
+        const selectedVariantOrOption = selectedOption || selectedVariant;
 
-    if (selectedVariantOrOption) {
-      // Get the price for the currently selected variant or variant option
-      const price = priceByCurrencyCode(currencyCode, selectedVariantOrOption.pricing);
+        if (selectedVariantOrOption) {
+          // Get the price for the currently selected variant or variant option
+          const price = priceByCurrencyCode(currencyCode, selectedVariantOrOption.pricing);
 
-      // Call addItemsToCart with an object matching the GraphQL `CartItemInput` schema
-      const { data } = await addItemsToCart([
-        {
-          price: {
-            amount: price.price,
-            currencyCode
-          },
-          productConfiguration: {
-            productId: product.productId, // Pass the productId, not to be confused with _id
-            productVariantId: selectedVariantOrOption.variantId // Pass the variantId, not to be confused with _id
-          },
-          quantity
+          // Call addItemsToCart with an object matching the GraphQL `CartItemInput` schema
+          const { data } = await addItemsToCart([
+            {
+              price: {
+                amount: price.price,
+                currencyCode
+              },
+              productConfiguration: {
+                productId: product.productId, // Pass the productId, not to be confused with _id
+                productVariantId: selectedVariantOrOption.variantId // Pass the variantId, not to be confused with _id
+              },
+              quantity
+            }
+          ]);
+
+          // If no errors occurred, track action
+          if (data) {
+            // The response data will be in either `createCart` or `addCartItems` prop
+            // depending on the type of user, either authenticated or anonymous.
+            const { cart } = data.createCart || data.addCartItems;
+            const { edges: items } = cart.items;
+
+            this.trackAction({
+              variant: {
+                ...selectedVariant,
+                cart_id: cart._id, // eslint-disable-line camelcase
+                quantity
+              },
+              optionId: selectedOption ? selectedOption._id : null,
+              action: PRODUCT_ADDED
+            });
+
+            // The mini cart popper will open automatically after adding an item to the cart,
+            // therefore, a CART_VIEWED event is published.
+            // debugger // eslint-disable-line
+            this.trackCartItems({ cartItems: items, cartId: cart._id, action: CART_VIEWED }); // eslint-disable-line camelcase
+          }
         }
-      ]);
-
-      // If no errors occurred, track action
-      if (data) {
-        // The response data will be in either `createCart` or `addCartItems` prop
-        // depending on the type of user, either authenticated or anonymous.
-        const { cart } = data.createCart || data.addCartItems;
-        const { edges: items } = cart.items;
-
-        this.trackAction({
-          variant: {
-            ...selectedVariant,
-            cart_id: cart._id, // eslint-disable-line camelcase
-            quantity
-          },
-          optionId: selectedOption ? selectedOption._id : null,
-          action: PRODUCT_ADDED
-        });
-
-        // The mini cart popper will open automatically after adding an item to the cart,
-        // therefore, a CART_VIEWED event is published.
-        // debugger // eslint-disable-line
-        this.trackCartItems({ cartItems: items, cartId: cart._id, action: CART_VIEWED }); // eslint-disable-line camelcase
+        //if (isWidthUp("md", width)) {
+          //openCartWithTimeout(3000);
+        //}
+        openCart();
+      } else {
+        console.log('no selected options');
       }
+    } else {
+      // display no selected variant message
+      console.log('no selected variant');
     }
-    if (isWidthUp("md", width)) {
+    //if (isWidthUp("md", width)) {
       // Open the cart, and close after a 3 second delay
-      openCartWithTimeout(3000);
-    }
+      //openCartWithTimeout(3000);
+    //}
   };
 
   /**
@@ -265,9 +299,9 @@ class ProductDetail extends Component {
         <Fragment>
           <div className={classes.section}>
             <ProductDetailTitle pageTitle={product.pageTitle} title={product.title} />
-            <div className={classes.info}>
+            {/*<div className={classes.info}>
               <ProductDetailVendor>{product.vendor}</ProductDetailVendor>
-            </div>
+            </div>*/}
             <div className={classes.info}>
               <ProductDetailPrice compareAtPrice={compareAtDisplayPrice} isCompact price={productPrice.displayPrice} />
             </div>
@@ -276,7 +310,11 @@ class ProductDetail extends Component {
           <div className={classes.section}>
             <MediaGallery mediaItems={pdpMediaItems} />
           </div>
-
+          
+          <div className={classes.section}>
+            <ProductDetailDescription>{product.description}</ProductDetailDescription>
+          </div>
+            
           <div className={classes.section}>
             <VariantList
               onSelectOption={this.handleSelectOption}
@@ -292,11 +330,19 @@ class ProductDetail extends Component {
               selectedOptionId={pdpSelectedOptionId}
               selectedVariantId={pdpSelectedVariantId}
               variants={product.variants}
+              product={product}
             />
           </div>
 
+          
           <div className={classes.section}>
-            <ProductDetailDescription>{product.description}</ProductDetailDescription>
+            <Grid container spacing={theme.spacing.unit * 5}>
+              <Grid item xs={12}>
+                <ProductDetailBannerDesc
+                  descItems={product.metafields}
+                /> 
+              </Grid>
+            </Grid>
           </div>
         </Fragment>
       );
@@ -304,7 +350,7 @@ class ProductDetail extends Component {
 
     return (
       <Fragment>
-        <Grid container spacing={theme.spacing.unit * 5}>
+        <Grid container spacing={theme.spacing.unit * 5} style={{backgroundColor: '#ffffff'}}>
           <Grid item className={classes.breadcrumbGrid} xs={12}>
             <Breadcrumbs isPDP tagId={routingStore.tagId} product={product} />
           </Grid>
@@ -316,30 +362,49 @@ class ProductDetail extends Component {
 
           <Grid item xs={12} sm={6}>
             <ProductDetailTitle pageTitle={product.pageTitle} title={product.title} />
-            <div className={classes.info}>
+            {/*<div className={classes.info}>
               <ProductDetailVendor>{product.vendor}</ProductDetailVendor>
-            </div>
+            </div>*/}
             <div className={classes.info}>
               <ProductDetailPrice className={classes.bottomMargin} compareAtPrice={compareAtDisplayPrice} price={productPrice.displayPrice} />
             </div>
             <div className={classes.info}>
               <ProductDetailDescription>{product.description}</ProductDetailDescription>
             </div>
-            <VariantList
-              onSelectOption={this.handleSelectOption}
-              onSelectVariant={this.handleSelectVariant}
-              product={product}
-              selectedOptionId={pdpSelectedOptionId}
-              selectedVariantId={pdpSelectedVariantId}
-              currencyCode={currencyCode}
-              variants={product.variants}
-            />
+            {product.selectors && 
+              <VariantSelector
+                onSelectOption={this.handleSelectOption}
+                onSelectVariant={this.handleSelectVariant}
+                product={product}
+                selectedOptionId={pdpSelectedOptionId}
+                selectedVariantId={pdpSelectedVariantId}
+                currencyCode={currencyCode}
+                variants={product.variants}
+                selectors={product.selectors}
+              />
+            }
+            {!product.selectors && 
+              <VariantList
+                onSelectOption={this.handleSelectOption}
+                onSelectVariant={this.handleSelectVariant}
+                product={product}
+                selectedOptionId={pdpSelectedOptionId}
+                selectedVariantId={pdpSelectedVariantId}
+                currencyCode={currencyCode}
+                variants={product.variants}
+              />
+            }
             <ProductDetailAddToCart
               onClick={this.handleAddToCartClick}
               selectedOptionId={pdpSelectedOptionId}
               selectedVariantId={pdpSelectedVariantId}
               variants={product.variants}
             />
+          </Grid>  
+          <Grid item xs={12}>
+            <ProductDetailBannerDesc
+              descItems={product.metafields}
+            /> 
           </Grid>
         </Grid>
       </Fragment>

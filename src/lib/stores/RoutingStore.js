@@ -116,7 +116,7 @@ export default class RoutingStore {
     }
 
     // Validate limit
-    _query.limit = inPageSizes(_limit) ? _limit : PAGE_SIZES._20;
+    _query.limit = inPageSizes(_limit) ? _limit : PAGE_SIZES._15;
     let urlQueryString = "";
     Object.keys(_query).forEach((key, index, arr) => {
       urlQueryString += `${key}=${_query[key]}`;

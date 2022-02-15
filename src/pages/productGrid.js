@@ -6,9 +6,10 @@ import withCatalogItems from "containers/catalog/withCatalogItems";
 import ProductGrid from "components/ProductGrid";
 import trackProductListViewed from "lib/tracking/trackProductListViewed";
 import { inPageSizes } from "lib/utils/pageSizes";
+import HomepageLanding from "components/HomepageLanding";
 
 @withCatalogItems
-@inject("routingStore", "uiStore")
+@inject("routingStore", "uiStore", "navItems")
 @observer
 class ProductGridPage extends Component {
   static propTypes = {
@@ -28,7 +29,8 @@ class ProductGridPage extends Component {
       setPageSize: PropTypes.func.isRequired,
       setSortBy: PropTypes.func.isRequired,
       sortBy: PropTypes.string.isRequired
-    })
+    }),
+    navItems: PropTypes.object
   };
 
   static async getInitialProps({ req }) {
@@ -73,8 +75,10 @@ class ProductGridPage extends Component {
       isLoadingCatalogItems,
       routingStore: { query },
       shop,
-      uiStore
+      uiStore,
+      navItems
     } = this.props;
+    
     const pageSize = query && inPageSizes(query.limit) ? parseInt(query.limit, 10) : uiStore.pageSize;
     const sortBy = query && query.sortby ? query.sortby : uiStore.sortBy;
 
@@ -86,23 +90,19 @@ class ProductGridPage extends Component {
       pageTitle = "Storefront";
     }
 
+    //console.log({tag});
+    //console.log({navItems});
+
     return (
       <Fragment>
         <Helmet
           title={pageTitle}
           meta={[{ name: "description", content: shop && shop.description }]}
         />
-        <ProductGrid
-          catalogItems={catalogItems}
-          currencyCode={(shop && shop.currency && shop.currency.code) || "USD"}
-          initialSize={initialGridSize}
-          isLoadingCatalogItems={isLoadingCatalogItems}
-          pageInfo={catalogItemsPageInfo}
-          pageSize={pageSize}
-          setPageSize={this.setPageSize}
-          setSortBy={this.setSortBy}
-          sortBy={sortBy}
+        <HomepageLanding
+          navItems={navItems}
         />
+        
       </Fragment>
     );
   }

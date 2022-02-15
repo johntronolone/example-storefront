@@ -9,3 +9,12 @@ mutation placeOrder($input: PlaceOrderInput!, $language: String! = "en") {
     token
   }
 }
+
+mutation placeOrderMutation($input: PlaceOrderInput!, $language: String! = "en") {
+  placeOrder(input: $input) {
+    orders {
+      ...OrderQueryFragment
+    },
+    token
+  }
+}

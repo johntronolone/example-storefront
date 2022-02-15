@@ -129,7 +129,7 @@ export default class TagGridPage extends Component {
     if (!tag) {
       return (
         <ProductGridEmptyMessage
-          actionMessage="Go Home"
+          actionMessage="Return"
           resetLink="/"
         />
       );
@@ -146,10 +146,7 @@ export default class TagGridPage extends Component {
               [{ name: "description", content: shop && shop.description }]
           }
         />
-        <Breadcrumbs isTagGrid tagId={routingStore.tagId} />
-        {
-          tag && tag.displayTitle && <ProductGridTitle displayTitle={tag.displayTitle} />
-        }
+        {/*<Breadcrumbs isTagGrid tagId={routingStore.tagId} />*/}
         <ProductGridHero tag={tag} />
         <ProductGrid
           catalogItems={catalogItems}

@@ -12,6 +12,9 @@ import ErrorPage from "./_error";
 const styles = (theme) => ({
   accountProfileInfoContainer: {
     marginBottom: theme.spacing.unit * 4
+  },
+  mainContainer: {
+    paddingTop: '48px'
   }
 });
 
@@ -41,7 +44,7 @@ class ProfileOrdersPage extends Component {
   }
 
   render() {
-    const { authStore: { account }, router, shop } = this.props;
+    const { authStore: { account }, router, shop, classes: { mainContainer } } = this.props;
 
     // If there is no logged in user, return Not Found page
     if (account && !account._id) return <ErrorPage shop={shop} subtitle="Not Found" />;
@@ -53,11 +56,11 @@ class ProfileOrdersPage extends Component {
           meta={[{ name: "description", content: shop && shop.description }]}
         />
         <section>
-          <Grid container spacing={24}>
+          <Grid container className={mainContainer} spacing={24}>
             <Grid item xs={false} md={1} /> {/* MUI grid doesn't have an offset. Use blank grid item instead. */}
-            <Grid item xs={12} md={3}>
+            {/*<Grid item xs={12} md={3}>
               <ProfileMenu router={router} />
-            </Grid>
+            </Grid>*/}
             <Grid item xs={12} md={7}>
               {this.renderMainContent()}
             </Grid>

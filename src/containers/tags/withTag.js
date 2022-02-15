@@ -23,7 +23,8 @@ export default function withTag(Component) {
       router: PropTypes.object.isRequired,
       routingStore: PropTypes.shape({
         tagId: PropTypes.string
-      }).isRequired
+      }).isRequired,
+      slugOrIdOverride: PropTypes.string
     }
 
     render() {

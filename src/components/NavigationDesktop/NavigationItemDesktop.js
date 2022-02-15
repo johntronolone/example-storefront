@@ -9,6 +9,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import MenuList from "@material-ui/core/MenuList";
 import MenuItem from "@material-ui/core/MenuItem";
 import Popover from "@material-ui/core/Popover";
+import Popper from "@material-ui/core/Popper";
 import ChevronDownIcon from "mdi-material-ui/ChevronDown";
 import ChevronRight from "mdi-material-ui/ChevronRight";
 import ChevronUpIcon from "mdi-material-ui/ChevronUp";
@@ -18,13 +19,19 @@ import Link from "components/Link";
 
 const styles = (theme) => ({
   popover: {
-    left: "0!important",
-    maxWidth: "100vw",
+    //left: "0!important",
+    //maxWidth: "100vw",
     padding: theme.spacing.unit * 2,
-    width: "100vw"
+    //width: "100vw"
+    width: '100%',
+    positoin: 'relative'
   },
   grid: {
-    width: "100vw"
+    //width: "100vw"
+    //width: '100%'
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative'
   },
   navigationShopAllLink: {
     display: "flex",
@@ -38,7 +45,11 @@ const styles = (theme) => ({
     fontSize: "12px"
   },
   primaryNavItem: {
-    textTransform: "capitalize"
+    textTransform: "capitalize",
+    transitionDuration: "400ms",
+    transitionProperty: "transform",
+    transitionTimingFunction: "liner",
+    width: '140px'
   }
 });
 
@@ -48,16 +59,20 @@ class NavigationItemDesktop extends Component {
   static propTypes = {
     classes: PropTypes.object,
     navItem: PropTypes.object,
-    routingStore: PropTypes.object
+    routingStore: PropTypes.object,
+    leftOffset: PropTypes.string
   };
 
   static defaultProps = {
     classes: {},
     navItem: {},
-    routingStore: {}
+    routingStore: {},
+    leftOffset: '0px'
   };
 
-  state = { isSubNavOpen: false };
+  state = { 
+    isSubNavOpen: false,
+  };
 
   linkPath = (providedNavItem) => {
     const { navItem, routingStore } = this.props;
@@ -77,16 +92,46 @@ class NavigationItemDesktop extends Component {
   onClick = (event) => {
     event.preventDefault();
 
-    if (this.hasSubNavItems) {
-      this.setState({ isSubNavOpen: !this.state.isSubNavOpen });
-    } else {
-      const path = this.linkPath();
-      Router.pushRoute(path);
-    }
+    //if (this.hasSubNavItems) {
+    //  this.setState({ isSubNavOpen: !this.state.isSubNavOpen });
+    //} else {
+    const path = this.linkPath();
+    Router.pushRoute(path);
+    //}
+  };
+  
+  onHover = (event) => {
+    event.preventDefault();    
+
+    if (this.hasSubNavItems) { // && !this.state.wasJustClosed) {
+      this.setState({ isSubNavOpen: true });
+    } 
+    //this.setState({ wasJustClosed: false});
   };
 
-  onClose = () => {
+  onClose = (event) => {
+    //event.preventDefault();
+
     this.setState({ isSubNavOpen: false });
+    //this.setState({ wasJustClosed: true });
+  };
+  
+  onLeaveSubNav = (event) => {
+    event.preventDefault();
+
+    this.setState({ isSubNavOpen: false });
+  };
+
+  onLeaveButton = (event) => {
+    event.preventDefault();
+    
+    let related = event.relatedTarget ? event.relatedTarget.id : "unknown";
+    
+    //console.log(related);
+
+    if (!(related == 'nav_id' || related == '')) { //(related == 'button_id' || related == 'logo_id' || related == 'header_id' ) {
+      this.setState({ isSubNavOpen: false });
+    }
   };
 
   renderSubNav(navItemGroup) {
@@ -108,29 +153,30 @@ class NavigationItemDesktop extends Component {
       );
     });
 
-    menuItems.unshift(<Divider key="divider" />);
+   // menuItems.unshift(<Divider key="divider" />);
 
     return menuItems;
   }
 
   renderPopover() {
-    const { classes, navItem, navItem: { items, navigationItem } } = this.props;
+    const { classes, navItem, navItem: { items, navigationItem }, leftOffset } = this.props;
 
     if (items) {
       return (
-        <Popover
+        <Popper
           classes={{ paper: classes.popover }}
-          anchorReference="anchorPosition"
-          anchorPosition={{ left: 0, top: 64 }}
           elevation={1}
           onClose={this.onClose}
           open={this.state.isSubNavOpen}
+          style={{ position: 'absolute', top: 60, marginTop: '-4px', left: leftOffset, right: 'unset', bottom: 'unset', paddingBottom: '24px', backgroundColor: 'white', borderBottom: 'solid 1px #f5f5f5', borderRight: 'solid 1px #f5f5f5', borderLeft: 'solid 1px #f5f5f5',  zIndex: 2000, borderRadius: '0 0 4px 4px'}}
+          onMouseLeave={this.onLeaveSubNav}
+          id="popper_id"
         >
-          <Grid container className={classes.grid} spacing={16}>
+          <Grid id="nav_id" container className={classes.grid} spacing={16}>
             {items.map((item, index) => {
               const { navigationItem: { data: { contentForLanguage, classNames: navigationItemClassNames, isUrlRelative, shouldOpenInNewWindow } } } = item;
               return (
-                <Grid item key={index}>
+                <Grid style={{ marginTop: '0px' }} item key={index}>
                   <MenuList disablePadding>
                     <MenuItem>
                       <Link
@@ -149,7 +195,7 @@ class NavigationItemDesktop extends Component {
               );
             })}
           </Grid>
-          <Link
+          {/*<Link
             className={classes.navigationShopAllLink}
             onClick={this.onClose}
             route={this.linkPath(navItem)}
@@ -158,8 +204,8 @@ class NavigationItemDesktop extends Component {
             shouldOpenInNewWindow={navigationItem.data.shouldOpenInNewWindow}
           >
             <span>Shop all {navigationItem.data.contentForLanguage} <ChevronRight className={classes.navigationShopAllLinkIcon} /></span>
-          </Link>
-        </Popover>
+          </Link>*/}
+        </Popper>
       );
     }
 
@@ -171,9 +217,9 @@ class NavigationItemDesktop extends Component {
 
     return (
       <Fragment>
-        <Button className={classNames(primaryNavItem, navigationItem.data.classNames)} color="inherit" onClick={this.onClick} href={this.linkPath(navItem)}>
+        <Button id='button_id' className={classNames(primaryNavItem, navigationItem.data.classNames)} color="inherit" onMouseEnter={this.onHover} onMouseLeave={this.onLeaveButton} href={this.linkPath(navItem)}>
           {navigationItem.data.contentForLanguage}
-          {this.hasSubNavItems && <Fragment>{this.state.isSubNavOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Fragment>}
+          {this.hasSubNavItems && <Fragment>{this.state.isSubNavOpen ? <ChevronDownIcon /> : <ChevronUpIcon />}</Fragment>}
         </Button>
         {this.hasSubNavItems && this.renderPopover()}
       </Fragment>

@@ -1,0 +1,19 @@
+#import "./fragments.gql" 
+
+# Apply discount code to cart
+mutation applyDiscountCodeToCartMutation($input: ApplyDiscountCodeToCartInput!) {
+  applyDiscountCodeToCart(input: $input) {
+    cart {
+      ...CartPayloadFragment
+    }
+  }
+} 
+
+# Remove discount code from cart
+mutation removeDiscountCodeFromCartMutation($input: RemoveDiscountCodeFromCartInput!) {
+  removeDiscountCodeFromCart(input: $input) {
+    cart {
+      ...CartPayloadFragment
+    }
+  }
+}

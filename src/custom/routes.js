@@ -17,6 +17,7 @@ function defineRoutes(routes) {
     .add("tag", "/tag/:slug", "tag")
     .add("profileAddressBook", "/profile/address", "profileAddressBook")
     .add("profileOrders", "/profile/orders", "profileOrders");
+    //.add("frames", "/tag/:slug", "tag");
 }
 
 module.exports = defineRoutes;

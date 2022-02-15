@@ -111,9 +111,9 @@ class OrderCardHeader extends Component {
     return (
       <div className={classes.orderCardHeader}>
         <Grid container alignItems="center">
-          <Grid item xs={12} md={3}>
+          {/*<Grid item xs={12} md={3}>
             <OrderCardStatusBadge displayStatus={displayStatus} status={status} />
-          </Grid>
+          </Grid>*/}
           <Grid item xs={12} md={3}>
             <Typography variant="caption" className={classnames(classes.orderCardInfoText, classes.orderCardInfoHeaderText)}>Date:</Typography>
             <Typography variant="caption" className={classes.orderCardInfoTextBold}>{orderDate}</Typography>

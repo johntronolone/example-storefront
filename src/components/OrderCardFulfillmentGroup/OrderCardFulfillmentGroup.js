@@ -68,6 +68,8 @@ class OrderCardFulfillmentGroup extends Component {
 
   renderItems() {
     const { classes, fulfillmentGroup } = this.props;
+    
+    //console.log({fulfillmentGroup});
 
     if (fulfillmentGroup && Array.isArray(fulfillmentGroup.items.nodes)) {
       const items = fulfillmentGroup.items.nodes.map((item) => ({
@@ -98,6 +100,8 @@ class OrderCardFulfillmentGroup extends Component {
   render() {
     const { classes, currentGroupCount, fulfillmentGroup, totalGroupsCount } = this.props;
 
+    let currentStatus = fulfillmentGroup.tracking ? 'Shipped' : 'Processing';
+    
     return (
       <Fragment>
         <section className={classes.fulfillmentGroup}>
@@ -110,27 +114,16 @@ class OrderCardFulfillmentGroup extends Component {
               spacing={24}
             >
               <Grid item xs={6}>
-                <Typography className={classes.fulfillmentGroupCount} variant="subtitle1">Shipment {currentGroupCount} of {totalGroupsCount}</Typography>
+                <Typography className={classes.fulfillmentGroupCount} variant="subtitle1">
+                  Shipment {currentGroupCount} of {totalGroupsCount} ({currentStatus})
+                </Typography>
               </Grid>
               <Grid item xs={6} className={classes.fulfillmentGroupHeaderRightColumn}>
                 {fulfillmentGroup.tracking ?
-                  <Button
-                    className={classes.trackShipmentButton}
-                    onClick={this.onTrackShipmentButtonClick}
-                    size="small"
-                    variant="outlined"
-                  >
-                    Track shipment
-                  </Button>
-                  :
-                  <Button
-                    className={classes.trackShipmentButton}
-                    disabled
-                    size="small"
-                    variant="outlined"
-                  >
-                    No tracking available
-                  </Button>
+                  
+                  <Typography>Tracking number: {fulfillmentGroup.tracking}</Typography>
+                :
+                  <Typography>No tracking available yet</Typography>
                 }
               </Grid>
             </Grid>
@@ -143,3 +136,20 @@ class OrderCardFulfillmentGroup extends Component {
 }
 
 export default OrderCardFulfillmentGroup;
+{/*<Button
+                    className={classes.trackShipmentButton}
+                    onClick={this.onTrackShipmentButtonClick}
+                    size="small"
+                    variant="outlined"
+                  >
+                    Track shipment
+                  </Button>*/
+
+                  /*<Button
+                    className={classes.trackShipmentButton}
+                    disabled
+                    size="small"
+                    variant="outlined"
+                  >
+                    No tracking available yet
+                  </Button>*/}

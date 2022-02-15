@@ -22,11 +22,13 @@ const styles = (theme) => ({
     [theme.breakpoints.up("md")]: {
       minHeight: "400px",
       paddingBottom: 0,
-      paddingRight: theme.spacing.unit * 8
-    }
+      paddingRight: 0
+    },
+    maxWidth: '400px',
+    margin: '0 auto',
   },
   loginButton: {
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing.unit * 3,
   },
   guestWrapper: {
     ...flexWrapper(),
@@ -38,6 +40,9 @@ const styles = (theme) => ({
       paddingLeft: theme.spacing.unit * 8,
       paddingTop: 0
     }
+  },
+  containerOverride: {
+    display: 'block'
   }
 });
 
@@ -64,8 +69,8 @@ export default class Entry extends Component {
   render() {
     const { classes, onLoginButtonClick, onRegisterButtonClick, setEmailOnAnonymousCart } = this.props;
     return (
-      <Grid container>
-        <Grid item xs={12} md={7}>
+      <Grid container className={classes.containerOverride}>
+        <Grid item xs={12}>
           <div className={classes.loginWrapper}>
             <Typography variant="h6" gutterBottom>
               Returning Customer
@@ -73,19 +78,22 @@ export default class Entry extends Component {
             <Button onClick={onLoginButtonClick} actionType="important" isFullWidth className={classes.loginButton}>
               Login
             </Button>
+            <Typography variant="h6" style={{paddingTop: '48px'}} gutterBottom>
+              New Customer
+            </Typography>
             <Button onClick={onRegisterButtonClick} actionType="secondary" isFullWidth className={classes.loginButton}>
               Create a new account
             </Button>
           </div>
         </Grid>
-        <Grid item xs={12} md={5}>
+        {/*<Grid item xs={12} md={5}>
           <div className={classes.guestWrapper}>
             <Typography variant="h6" gutterBottom>
               Guest Checkout
             </Typography>
             <GuestForm onSubmit={setEmailOnAnonymousCart} />
           </div>
-        </Grid>
+        </Grid>*/}
       </Grid>
     );
   }

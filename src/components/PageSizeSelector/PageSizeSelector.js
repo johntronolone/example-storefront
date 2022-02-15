@@ -5,16 +5,16 @@ import { PAGE_SIZES } from "lib/utils/pageSizes";
 
 const SELECTOR_OPTIONS = [
   {
-    name: "20 Products",
-    value: PAGE_SIZES._20
+    name: "15 Products",
+    value: PAGE_SIZES._15
+  },
+  {
+    name: "30 Products",
+    value: PAGE_SIZES._30
   },
   {
     name: "60 Products",
     value: PAGE_SIZES._60
-  },
-  {
-    name: "100 Products",
-    value: PAGE_SIZES._100
   }
 ];
 

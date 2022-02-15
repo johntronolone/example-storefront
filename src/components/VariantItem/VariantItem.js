@@ -14,22 +14,23 @@ const styles = (theme) => ({
     "textTransform": "none",
     "width": "100%",
     "borderRadius": "2px",
-    "backgroundColor": theme.palette.primary.contrastText,
-    "border": "1px solid",
-    "borderColor": theme.palette.reaction.borderColor,
+    "backgroundColor": theme.palette.reaction.black10, //theme.palette.primary.contrastText,
+    "border": "2px solid",
+    "borderColor": theme.palette.reaction.black10,// theme.palette.reaction.borderColor,
     "padding": theme.spacing.unit * 2,
     "&:hover": {
-      border: "1px solid",
+      border: "2px solid",
       borderColor: theme.palette.reaction.activeElementBorderColor,
       backgroundColor: theme.palette.primary.contrastText
     },
     "&:focus": {
-      outline: "auto 5px -webkit-focus-ring-color"
+      //outline: "auto 5px -webkit-focus-ring-color"
     }
   },
   activeVariant: {
-    border: "1px solid",
-    borderColor: theme.palette.reaction.activeElementBorderColor
+    border: "2px solid",
+    borderColor: theme.palette.reaction.activeElementBorderColor,
+    backgroundColor: "white"
   },
   soldOutVariant: {
     opacity: 0.2

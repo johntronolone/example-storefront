@@ -2,7 +2,8 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@reactioncommerce/components/Button/v1";
-import CartItemsList from "@reactioncommerce/components/CartItems/v1";
+//import CartItemsList from "@reactioncommerce/components/CartItems/v1";
+import CartItemsList from "./CartItemsList.js";
 
 const styles = (theme) => ({
   loadMore: {
@@ -36,7 +37,8 @@ class CartItems extends Component {
       }),
       productSlug: PropTypes.string,
       title: PropTypes.string,
-      quantity: PropTypes.number
+      quantity: PropTypes.number,
+      variantTitle: PropTypes.string
     })).isRequired,
     onChangeCartItemQuantity: PropTypes.func.isRequired,
     onLoadMoreCartItems: PropTypes.func,
@@ -70,6 +72,8 @@ class CartItems extends Component {
       hasMoreCartItems,
       onLoadMoreCartItems
     } = this.props;
+  
+    //console.log({items});
 
     return (
       <Fragment>

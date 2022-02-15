@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import withStyles from "@material-ui/core/styles/withStyles";
-import ProgressiveImage from "@reactioncommerce/components/ProgressiveImage/v1";
+//import ProgressiveImage from "@reactioncommerce/components/ProgressiveImage/v1";
+import ProgressiveImageMod from "./ProgressiveImageMod";
 import MediaGalleryItem from "components/MediaGalleryItem";
 
 const styles = (theme) => ({
@@ -63,7 +64,7 @@ class MediaGallery extends Component {
   renderPlaceHolderImg = () => {
     const placeholderURL = "/static/images/placeholder.gif";
     return (
-      <ProgressiveImage
+      <ProgressiveImageMod
         presrc={placeholderURL}
         src={placeholderURL}
       />
@@ -83,7 +84,7 @@ class MediaGallery extends Component {
 
     // TODO: figure out the correct usage of alt text here
     // LINK TO GH ISSUE
-    return <ProgressiveImage presrc={mediaUrls && mediaUrls.thumbnail} src={mediaUrls && mediaUrls.large} />;
+    return <ProgressiveImageMod presrc={mediaUrls && mediaUrls.thumbnail} src={mediaUrls && mediaUrls.large} />;
   }
 
   render() {
@@ -92,6 +93,7 @@ class MediaGallery extends Component {
     return (
       <Grid container className={classes.root}>
         <Grid item xs={12} sm={12}>
+
           <div className={classes.featured}>{this.renderFeaturedImage()}</div>
 
           <Grid container spacing={theme.spacing.unit}>
@@ -101,6 +103,7 @@ class MediaGallery extends Component {
               </Grid>
             ))}
           </Grid>
+
         </Grid>
       </Grid>
     );

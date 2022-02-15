@@ -15,4 +15,15 @@ export default {
   //     "backgroundColor_important": "#20427B"
   //   }
   // }
+  //"rui_components": {
+  //  "Button": {
+  //    "backgroundColor": "#4e71ba"
+  //  }
+  //  }
+  //"rui_components": {
+  //  "Button": {
+  //    "color": "#4e71ba"
+  //  }
+  //}
+  
 };

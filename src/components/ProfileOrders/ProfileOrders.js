@@ -45,7 +45,7 @@ class ProfileOrders extends Component {
       description: PropTypes.string
     }),
     uiStore: PropTypes.shape({
-      orderStatusQuery: PropTypes.array,
+      orderStatusQuery: PropTypes.object, //array,
       setOrderStatusSelectValue: PropTypes.func
     }).isRequired
   };
@@ -130,25 +130,92 @@ class ProfileOrders extends Component {
     return ordersToArray.map((order, index) => <OrderCard key={index} order={order} />);
   }
 
+  renderOrderDetails() {
+    const { orders } = this.props;
+    
+    let count = orders.totalCount.totalCount ? orders.totalCount.totalCount : 0;
+
+    for (var i = 0; i < count; i++) { //loop thru all orders
+      
+      //console.log(orders.edges[i].node);    
+      
+      for (var ii = 0; i < itemCount; ii++) { //loop thru all items in order
+        //console.log(orders.edges[i].node.fulfillmentGroups);
+      
+        //console.log(len(orders.edges[i].node.fulfillmentGroups));
+      }
+    
+      //render subtotal
+      //render tax
+      //render shipping
+      //render order total
+    }
+    // render:
+    // item name (hyperlink) | item price | qty | total price
+    // item name (hyperlink) | item price | qty | total price
+    // item name (hyperlink) | item price | qty | total price
+      
+  }
+
   render() {
-    const { classes, ordersPageInfo: pageInfo } = this.props;
+    {/*const { classes, orders: totalCount, orders } = this.props;
+
+    let count = totalCount.totalCount ? totalCount.totalCount : 0;
+  
 
     return (
       <Grid className={classes.profileOrdersContainer} container>
         <Grid className={classes.profileOrdersTitle} item xs={12} md={12}>
-          <Typography variant="h6">Orders</Typography>
+          <Typography variant="h6">Order Details</Typography>
         </Grid>
-        <Grid className={classes.profileOrdersSelect} item xs={12} md={12}>
-          {this.renderOrderTypeSelect()}
+        <Grid className={classes.profileOrdersTitle} item xs={12} md={12}>
+          <Typography>You have placed {count} order(s) from this account</Typography>
         </Grid>
-        <Grid className={classes.profileOrdersList} item xs={12} md={12}>
-          {this.renderOrders()}
-        </Grid>
-        <Grid className={classes.profileOrdersPagination} item xs={12} md={12}>
-          {pageInfo && <PageStepper pageInfo={pageInfo} />}
+        {this.renderOrderDetails()}
+        <Grid className={classes.profileOrdersTitle} item xs={12} md={12}>
+          <Typography>Please check your email for order summary and shipping status or call us at +1 (201) 457-1504.</Typography>
         </Grid>
       </Grid>
-    );
+    );*/}
+    const { classes, ordersPageInfo: pageInfo, orders } = this.props;
+    
+    if (orders && orders.totalCount && orders.totalCount > 0) {
+ 
+      return (
+        <Grid className={classes.profileOrdersContainer} container>
+          <Grid className={classes.profileOrdersTitle} item xs={12} md={12}>
+            <Typography variant="h6">Orders</Typography>
+          </Grid>
+          <Grid className={classes.profileOrdersSelect} item xs={12} md={12}>
+            {this.renderOrderTypeSelect()}
+          </Grid>
+          <Grid className={classes.profileOrdersList} item xs={12} md={12}>
+            {this.renderOrders()}
+          </Grid>
+          <Grid className={classes.profileOrdersPagination} item xs={12} md={12}>
+            {pageInfo && <PageStepper pageInfo={pageInfo} />}
+          </Grid>
+        </Grid>
+      );
+    } else {
+
+      return (
+        <Grid className={classes.profileOrdersContainer} container>
+          <Grid className={classes.profileOrdersTitle} item xs={12} md={12}>
+            <Typography variant="h6">Orders</Typography>
+          </Grid>
+          <Grid className={classes.profileOrdersSelect} item xs={12} md={12}>
+            {this.renderOrderTypeSelect()}
+          </Grid>
+          <Grid className={classes.profileOrdersList} item xs={12} md={12}>
+            <Typography>No orders to display</Typography>
+          </Grid>
+          <Grid className={classes.profileOrdersPagination} item xs={12} md={12}>
+            {pageInfo && <PageStepper pageInfo={pageInfo} />}
+          </Grid>
+        </Grid>
+      );
+    }
   }
 }
 

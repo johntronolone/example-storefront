@@ -95,7 +95,7 @@ export default class Login extends Component {
 
         <Link route="home">
           <div className={classes.logo}>
-            {shop ? <ShopLogo shopName={shop.name} /> : "Example Storefront"}
+            <ShopLogo shopName={shop.name} />
           </div>
         </Link>
 
@@ -117,12 +117,12 @@ export default class Login extends Component {
           title={`Login | ${shop && shop.name}`}
           meta={[{ name: "description", content: shop && shop.description }]}
         />
-        <CheckoutTopHat checkoutMessage="Free Shipping + Free Returns" />
         <div className={classes.root}>
           {this.renderHeader()}
           <main className={classes.main}>{this.renderEntry()}</main>
         </div>
       </Fragment>
     );
+    //<CheckoutTopHat checkoutMessage="Free Shipping + Free Returns" />
   }
 }

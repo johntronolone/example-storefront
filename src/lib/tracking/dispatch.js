@@ -8,7 +8,7 @@ import analyticsProviders from "../../custom/analytics";
  */
 export default function dispatch(data) {
   // Dispatch analytics events
-  analyticsProviders.forEach((provider) => {
+  /*analyticsProviders.forEach((provider) => {
     provider.dispatch(data);
-  });
+  });*/
 }
